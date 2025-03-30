@@ -1,0 +1,126 @@
+<!-- templates/dog_profile_detail.html -->
+{% extends "base.html" %}
+
+{% block title %}狗狗檔案詳情 - {{ name }}{% endblock %}
+
+{% block styles %}
+<style>
+    .section {
+        margin-bottom: 40px; /* 拉大區塊間距，從 20px 增加到 40px */
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    .section.basic { background-color: #f5e6cc; } /* 淺棕色 - 基本資料 */
+    .section.health { background-color: #e6e6e6; } /* 淺灰色 - 健康資訊 */
+    .section.goal { background-color: #e6ffe6; } /* 淺綠色 - 今日目標 */
+    .section.intake { background-color: #fff3e6; } /* 淺橘色 - 今日已攝取 */
+    .section h2 {
+        margin-top: 0;
+        color: #555;
+        font-size: 18px; /* 縮小標題文字，從預設值調整為 18px */
+    }
+    .section p {
+        margin: 10px 0; /* 增加上下行間距，從 5px 調整為 10px */
+        color: #777;
+        font-size: 14px; /* 縮小文字大小，從預設值調整為 14px */
+        line-height: 1.6; /* 增加行高，提升可讀性 */
+    }
+    .progress-bar {
+        width: 100%;
+        background-color: #e0e0e0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+    .progress {
+        height: 20px;
+        border-radius: 5px;
+        text-align: center;
+        color: white;
+        line-height: 20px;
+        transition: width 0.3s ease; /* 進度條動畫 */
+    }
+    .progress.calories {
+        background-color: #ff8c00; /* 深橘色 - 已攝取熱量 */
+    }
+    .progress.water {
+        background-color: #0288d1; /* 深藍色 - 已攝取水量 */
+    }
+    .highlight { color: #ff8c00; } /* 深橘色 - 已攝取數值 */
+    .max-value { color: #ffcc80; } /* 淺橘色 - 熱量最大值 */
+    .max-water { color: #4fc3f7; } /* 淺藍色 - 水量最大值 */
+    .back-btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #ccc;
+        color: #333;
+        text-decoration: none;
+        border-radius: 5px;
+        text-align: center;
+    }
+    .back-btn:hover {
+        background-color: #bbb;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>{{ name }} 的檔案</h1>
+
+<!-- 基本資料 -->
+<div class="section basic">
+    <h2>基本資料</h2>
+    <p>🐶 名字：{{ name }}</p>
+    <p>🎂 生日：{{ birthday }}</p>
+    <p>🎈 年齡：{{ age }} 歲</p>
+    <p>⚖️ 體重：{{ weight }} 公斤</p>
+    <p>🐾 品種：{{ breed if breed else '未設定' }}</p>
+    <p>📊 狀態：{{ status if status else '未設定' }}</p>
+</div>
+
+<!-- 今日目標 -->
+<div class="section goal">
+    <h2>今日目標</h2>
+    <p>🔥 基礎能量需求(RER)：{{ rer if rer else '未計算' }} kcal</p>
+    <p>⚡ 日常能量需求(DER)：{{ der_min if der_min else '未計算' }}-{{ der_max if der_max else '未計算' }} kcal</p>
+    <p>💧 每日喝水量：{{ min_water if min_water else '未計算' }}-{{ max_water if max_water else '未計算' }} ml</p>
+</div>
+
+<!-- 健康資訊 -->
+{% if health_info %}
+    <div class="section health">
+        <h2>健康資訊</h2>
+        <p>📏 身高：{{ health_info.height }}</p>
+        <p>⚖️ 體重：{{ health_info.weight }}</p>
+        <p>⏳ 壽命：{{ health_info.lifespan }}</p>
+        <p>🩺 建議檢查：{{ health_info.recommended_tests }}</p>
+    </div>
+{% else %}
+    <div class="section health">
+        <h2>健康資訊</h2>
+        <p>尚未設定品種，無法顯示健康資訊。</p>
+    </div>
+{% endif %}
+
+<!-- 今日已攝取 -->
+<div class="section intake">
+    <h2>今日已攝取</h2>
+    <p>🔥 熱量：<span class="highlight">{{ calories }}</span> / <span class="max-value">{{ der_max if der_max else '未計算' }}</span> kcal</p>
+    <div class="progress-bar">
+        <div class="progress calories" style="width: {{ calories_progress|default(0) }}%;">
+            {{ calories_progress_rounded|default(0) }}%
+        </div>
+    </div>
+    <p>💧 水量：<span class="highlight">{{ water }}</span> / <span class="max-water">{{ max_water if max_water else '未計算' }}</span> ml</p>
+    <div class="progress-bar">
+        <div class="progress water" style="width: {{ water_progress|default(0) }}%;">
+            {{ water_progress_rounded|default(0) }}%
+        </div>
+    </div>
+</div>
+
+<!-- 返回按鈕 -->
+<a href="{{ url_for('dog_profile', user_id=user_id) }}" class="back-btn">返回</a>
+{% endblock %}

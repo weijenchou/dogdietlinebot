@@ -1,0 +1,190 @@
+<!-- templates/create_dog_profile.html -->
+{% extends "base.html" %}
+
+{% block title %}建立狗狗檔案{% endblock %}
+
+{% block styles %}
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        color: #555;
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        color: #333;
+    }
+
+    select {
+        appearance: none;
+        background: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+        background-size: 20px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background-color: #5e3a48;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #7a4e5e;
+    }
+
+    .target-section {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e6f3f0;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .target-section h2 {
+        color: #555;
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .target-section p {
+        color: #777;
+        font-size: 16px;
+        margin: 5px 0;
+    }
+
+    @media (max-width: 480px) {
+        label {
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        button {
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .target-section h2 {
+            font-size: 16px;
+        }
+
+        .target-section p {
+            font-size: 14px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>建立狗狗檔案</h1>
+
+<!-- 錯誤訊息 -->
+{% if error %}
+<div class="error">{{ error }}</div>
+{% endif %}
+
+<!-- 表單 -->
+<form method="POST" action="{{ url_for('create_dog_profile', user_id=user_id) }}">
+    <div class="form-group">
+        <label for="name">姓名：</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+
+    <div class="form-group">
+        <label for="birthday">生日：</label>
+        <input type="date" id="birthday" name="birthday" required>
+    </div>
+
+    <div class="form-group">
+        <label for="weight">體重（公斤）：</label>
+        <input type="number" id="weight" name="weight" step="0.1" required>
+    </div>
+
+    <div class="form-group">
+        <label for="breed">品種：</label>
+        <select id="breed" name="breed" required>
+            <option value="" disabled selected>選擇品種</option>
+            <option value="吉娃娃">吉娃娃</option>
+            <option value="博美犬">博美犬</option>
+            <option value="約克夏">約克夏</option>
+            <option value="西施犬">西施犬</option>
+            <option value="馬爾濟斯">馬爾濟斯</option>
+            <option value="臘腸犬">臘腸犬</option>
+            <option value="玩具貴賓犬">迷你貴賓犬</option>
+            <option value="巨型貴賓犬">巨型貴賓犬</option>
+            <option value="雪納瑞">雪納瑞</option>
+            <option value="柴犬">柴犬</option>
+            <option value="拉布拉多">拉布拉多</option>
+            <option value="黃金獵犬">黃金獵犬</option>
+            <option value="法國鬥牛犬">法國鬥牛犬</option>
+            <option value="比熊犬">比熊犬</option>
+            <option value="西高地白梗">西高地白梗</option>
+            <option value="柯基">柯基</option>
+            <option value="哈士奇">哈士奇</option>
+            <option value="薩摩耶">薩摩耶</option>
+            <option value="杜賓犬">杜賓犬</option>
+            <option value="大丹犬">大丹犬</option>
+            <option value="羅威納">羅威納</option>
+            <option value="鬆獅犬">鬆獅犬</option>
+            <option value="米格魯">米格魯</option>
+            <option value="邊境牧羊犬">邊境牧羊犬</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="status">狀態：</label>
+        <select id="status" name="status" required>
+            <option value="" disabled selected>選擇狀態</option>
+            <option value="正在發育的幼犬(4個月以下)">正在發育的幼犬(4個月以下)</option>
+            <option value="正在發育的幼犬(4個月-1歲)">正在發育的幼犬(4個月-1歲)</option>
+            <option value="結紮成年犬(1-7歲)">結紮成年犬(1-7歲)</option>
+            <option value="未結紮成年犬(1-7歲)">未結紮成年犬(1-7歲)</option>
+            <option value="輕度減肥成年犬">輕度減肥成年犬</option>
+            <option value="重度減肥成年犬">重度減肥成年犬</option>
+            <option value="過瘦成年犬">過瘦成年犬</option>
+            <option value="輕度活動量">輕度活動量</option>
+            <option value="劇烈活動量">劇烈活動量</option>
+            <option value="高齡犬">高齡犬</option>
+            <option value="懷孕中的狗媽媽">懷孕中的狗媽媽</option>
+            <option value="哺乳中的狗媽媽">哺乳中的狗媽媽</option>
+            <option value="生病成年犬">生病成年犬</option>
+        </select>
+    </div>
+
+    <button type="submit">完成</button>
+</form>
+
+<!-- 今日目標區塊 -->
+{% if target_data %}
+<div class="target-section">
+    <h2>今日目標</h2>
+    <p>基礎能量需求：{{ target_data.rer }} kcal</p>
+    <p>日常能量需求：{{ target_data.der_min }}-{{ target_data.der_max }} kcal</p>
+    <p>每日喝水量：{{ target_data.min_water }}-{{ target_data.max_water }} ml</p>
+</div>
+{% endif %}
+{% endblock %}

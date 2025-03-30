@@ -1,0 +1,228 @@
+<!-- templates/daily_intake_progress.html -->
+{% extends "base.html" %}
+
+{% block title %}紀錄今天攝取{% endblock %}
+
+{% block styles %}
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        color: #555;
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    select,
+    input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        color: #333;
+    }
+
+    select {
+        appearance: none;
+        background: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+        background-size: 20px;
+    }
+
+    .progress-section {
+        margin-bottom: 20px;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        color: #555;
+        font-size: 16px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 20px;
+        background-color: #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress {
+        height: 100%;
+        background-color: #ff9800; /* 深橘色 */
+        transition: width 0.3s;
+    }
+
+    .progress.water {
+        background-color: #0288d1; /* 深藍色 */
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background-color: #5e3a48;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #7a4e5e;
+    }
+
+    .legend {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #777;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .legend-dot.consumed-calories {
+        background-color: #ff9800;
+    }
+
+    .legend-dot.target-calories {
+        background-color: #ffcc80;
+    }
+
+    .legend-dot.consumed-water {
+        background-color: #0288d1;
+    }
+
+    .legend-dot.target-water {
+        background-color: #4fc3f7;
+    }
+
+    @media (max-width: 480px) {
+        label {
+            font-size: 14px;
+        }
+
+        select,
+        input[type="number"] {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .progress-label {
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 15px;
+        }
+
+        button {
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .legend {
+            font-size: 12px;
+            gap: 10px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>紀錄今天攝取</h1>
+
+<!-- 錯誤訊息 -->
+{% if error %}
+<div class="error">{{ error }}</div>
+{% endif %}
+
+<!-- 進度條 -->
+<div class="progress-section">
+    <div class="progress-label">
+        <span>熱量</span>
+        <span>{{ consumed_calories }} / {{ target_calories }} kcal</span>
+    </div>
+    <div class="progress-bar">
+        <div class="progress" style="width: {{ (consumed_calories / target_calories * 100) if target_calories > 0 else 0 }}%;"></div>
+    </div>
+</div>
+
+<div class="progress-section">
+    <div class="progress-label">
+        <span>水量</span>
+        <span>{{ consumed_water }} / {{ target_water }} ml</span>
+    </div>
+    <div class="progress-bar">
+        <div class="progress water" style="width: {{ (consumed_water / target_water * 100) if target_water > 0 else 0 }}%;"></div>
+    </div>
+</div>
+
+<!-- 表單 -->
+<form method="POST" action="{{ url_for('record_daily_intake', user_id=user_id) }}">
+    <div class="form-group">
+        <label for="dog_name">寵物名字：</label>
+        <select id="dog_name" name="dog_name" required>
+            <option value="" disabled {% if not name %}selected{% endif %}>選擇狗狗</option>
+            {% for dog in dogs %}
+            <option value="{{ dog[0] }}" {% if dog[0] == name %}selected{% endif %}>{{ dog[0] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="calories">熱量（kcal）：</label>
+        <input type="number" id="calories" name="calories" step="0.1" placeholder="輸入熱量（可選）">
+    </div>
+
+    <div class="form-group">
+        <label for="water">水量（ml）：</label>
+        <input type="number" id="water" name="water" step="0.1" placeholder="輸入水量（可選）">
+    </div>
+
+    <button type="submit">完成</button>
+</form>
+
+<!-- 圖例 -->
+<div class="legend">
+    <div class="legend-item">
+        <span class="legend-dot consumed-calories"></span>
+        <span>已攝取熱量</span>
+    </div>
+    <div class="legend-item">
+        <span class="legend-dot target-calories"></span>
+        <span>熱量需求最大值</span>
+    </div>
+    <div class="legend-item">
+        <span class="legend-dot consumed-water"></span>
+        <span>已攝取水量</span>
+    </div>
+    <div class="legend-item">
+        <span class="legend-dot target-water"></span>
+        <span>水量需求最大值</span>
+    </div>
+</div>
+{% endblock %}
